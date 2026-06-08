@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Children's Literature — Study & Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0e0c;
+  --surface: #1a1814;
+  --surface2: #232018;
+  --border: #2e2b24;
+  --accent: #e8c84a;
+  --accent2: #c45c2e;
+  --green: #4caf6e;
+  --red: #e05555;
+  --text: #f0ead8;
+  --muted: #7a7262;
+  --radius: 12px;
+}
+body.light {
+  --bg: #f5f2eb;
+  --surface: #ffffff;
+  --surface2: #f0ece2;
+  --border: #ddd8cc;
+  --accent: #c49a10;
+  --accent2: #c45c2e;
+  --green: #2e8c50;
+  --red: #cc3333;
+  --text: #1a1714;
+  --muted: #7a7060;
+}
+body.light .mode-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.12); }
+body.light .answer-btn:hover:not(:disabled) { background: rgba(196,154,16,.08); }
+body.light .card-front { background: #fff; }
+body.light .card-back { background: linear-gradient(135deg, #e8f5ec, #d4edda); }
+body.light .exam-topbar { background: rgba(245,242,235,.95); }
+body.light body::before { opacity: .2; }
+
+/* theme toggle button */
+#theme-toggle {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  background: var(--surface); border: 1.5px solid var(--border);
+  color: var(--text); width: 40px; height: 40px; border-radius: 50%;
+  cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+#theme-toggle:hover { border-color: var(--accent); transform: scale(1.1); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0; opacity: .5;
+}
+
+#app { position: relative; z-index: 1; }
+
+/* ── HOME ── */
+#home {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+.home-badge {
+  display: inline-block;
+  background: var(--accent); color: #0f0e0c;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 20px;
+  margin-bottom: 24px;
+}
+.home-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 900; line-height: 1.05;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.home-title em { color: var(--accent); font-style: italic; }
+.home-sub {
+  color: var(--muted); font-size: 1rem; font-weight: 300;
+  margin-bottom: 48px; max-width: 420px;
+}
+.home-stats {
+  display: flex; gap: 32px; justify-content: center;
+  margin-bottom: 52px;
+}
+.stat-box {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem; font-weight: 700; color: var(--accent);
+}
+.stat-label { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+.mode-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  max-width: 600px; width: 100%; margin-bottom: 32px;
+}
+.mode-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  cursor: pointer;
+  transition: all .25s;
+  text-align: left;
+  position: relative; overflow: hidden;
+}
+.mode-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left;
+  transition: transform .3s;
+}
+.mode-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.4); }
+.mode-card:hover::after { transform: scaleX(1); }
+.mode-icon { font-size: 1.8rem; margin-bottom: 10px; }
+.mode-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; }
+.mode-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+.progress-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 28px;
+  max-width: 600px; width: 100%;
+}
+.progress-title { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.progress-bar-wrap { background: var(--bg); border-radius: 99px; height: 8px; overflow: hidden; margin-bottom: 10px; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width .5s; }
+.progress-info { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+
+/* ── SHARED QUIZ LAYOUT ── */
+#quiz-view {
+  max-width: 760px; margin: 0 auto; padding: 24px 20px 60px;
+  display: none;
+}
+.quiz-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 32px;
+}
+.back-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 8px 16px; border-radius: 8px;
+  cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+.quiz-mode-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent); font-weight: 600;
+}
+.quiz-progress-bar {
+  flex: 1; height: 5px; background: var(--surface2); border-radius: 99px; overflow: hidden;
+}
+.quiz-progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s; }
+.qnum { font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+/* question card */
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 36px;
+  margin-bottom: 20px;
+  animation: slideUp .35s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  line-height: 1.55; margin-bottom: 28px;
+  color: var(--text);
+}
+
+/* answers */
+.answers { display: flex; flex-direction: column; gap: 12px; }
+.answer-btn {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  color: var(--text); padding: 16px 20px;
+  border-radius: 10px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+  text-align: left; transition: all .18s;
+  display: flex; align-items: center; gap: 14px;
+  line-height: 1.4;
+}
+.answer-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(232,200,74,.07); }
+.answer-btn .letter {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--border); color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+  transition: all .18s;
+}
+.answer-btn:hover:not(:disabled) .letter { background: var(--accent); color: #0f0e0c; }
+.answer-btn.correct { border-color: var(--green); background: rgba(76,175,110,.12); }
+.answer-btn.correct .letter { background: var(--green); color: #0f0e0c; }
+.answer-btn.wrong { border-color: var(--red); background: rgba(224,85,85,.1); }
+.answer-btn.wrong .letter { background: var(--red); color: #fff; }
+.answer-btn.reveal-correct { border-color: var(--green); background: rgba(76,175,110,.08); }
+.answer-btn.reveal-correct .letter { background: var(--green); color: #0f0e0c; }
+.answer-btn:disabled { cursor: default; }
+
+.feedback-bar {
+  border-radius: 10px; padding: 14px 20px;
+  display: none; margin-bottom: 16px;
+  font-size: 0.9rem; font-weight: 500;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.feedback-bar.correct { background: rgba(76,175,110,.15); border: 1px solid var(--green); color: var(--green); }
+.feedback-bar.wrong { background: rgba(224,85,85,.1); border: 1px solid var(--red); color: var(--red); }
+
+.next-btn {
+  width: 100%; padding: 16px;
+  background: var(--accent); color: #0f0e0c;
+  border: none; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+  display: none;
+}
+.next-btn:hover { background: #f5d850; transform: translateY(-1px); }
+
+/* ── FLASHCARD MODE ── */
+.flashcard-wrap { perspective: 1000px; margin-bottom: 24px; }
+.flashcard {
+  background: transparent;
+  width: 100%; min-height: 280px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
+  cursor: pointer;
+  border-radius: 16px;
+}
+.flashcard.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 36px; text-align: center;
+}
+.card-front {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.card-back {
+  background: linear-gradient(135deg, #1a2e1a, #162616);
+  border: 1px solid var(--green);
+  transform: rotateY(180deg);
+}
+.card-front-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+}
+.card-question {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem); line-height: 1.55;
+  color: var(--text);
+}
+.card-answer-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 16px;
+}
+.card-answer {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.5;
+  color: #b8f0c8; font-weight: 700;
+}
+.card-hint { font-size: 12px; color: var(--muted); margin-top: 12px; }
+.flashcard-controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.fc-btn {
+  padding: 12px 28px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--surface2); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; transition: all .2s;
+}
+.fc-btn:hover { border-color: var(--accent); color: var(--accent); }
+.fc-btn.knew { border-color: var(--green); color: var(--green); }
+.fc-btn.knew:hover { background: rgba(76,175,110,.1); }
+.fc-btn.retry { border-color: var(--red); color: var(--red); }
+.fc-btn.retry:hover { background: rgba(224,85,85,.08); }
+
+/* ── RESULTS ── */
+#results-view {
+  max-width: 600px; margin: 0 auto;
+  padding: 60px 20px;
+  display: none; text-align: center;
+}
+.result-ring {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) 0%, var(--surface) 0%);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 32px;
+  position: relative;
+}
+.result-ring::before {
+  content: '';
+  position: absolute; inset: 12px;
+  background: var(--bg); border-radius: 50%;
+}
+.result-pct {
+  position: relative; z-index: 1;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 700; color: var(--accent);
+}
+.result-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 700; margin-bottom: 12px;
+}
+.result-sub { color: var(--muted); margin-bottom: 40px; font-size: 0.95rem; }
+.result-breakdown {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+  margin-bottom: 36px;
+}
+.rb-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.rb-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+.rb-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.ra-btn {
+  padding: 13px 24px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+}
+.ra-btn.primary { background: var(--accent); color: #0f0e0c; border: none; }
+.ra-btn.primary:hover { background: #f5d850; }
+.ra-btn.secondary { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+.ra-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+.wrong-review { text-align: left; margin-top: 36px; }
+.wr-title {
+  font-family: 'Playfair Display', serif; font-size: 1.2rem;
+  font-weight: 700; margin-bottom: 16px; color: var(--red);
+}
+.wr-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px; margin-bottom: 10px;
+}
+.wr-q { font-size: 0.9rem; color: var(--muted); margin-bottom: 6px; }
+.wr-a { font-size: 0.95rem; font-weight: 500; color: var(--green); }
+
+/* ── BROWSE MODE ── */
+#browse-view {
+  max-width: 760px; margin: 0 auto;
+  padding: 24px 20px 60px; display: none;
+}
+.search-bar {
+  background: var(--surface); border: 1.5px solid var(--border);
+  color: var(--text); padding: 14px 20px;
+  border-radius: 10px; width: 100%;
+  font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+  outline: none; transition: border-color .2s;
+  margin-bottom: 16px;
+}
+.search-bar:focus { border-color: var(--accent); }
+.search-bar::placeholder { color: var(--muted); }
+.browse-list { display: flex; flex-direction: column; gap: 10px; }
+.browse-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 22px; cursor: pointer;
+  transition: all .2s;
+}
+.browse-item:hover { border-color: var(--accent); }
+.browse-item .bi-q { font-size: 0.95rem; margin-bottom: 8px; }
+.browse-item .bi-a {
+  font-size: 0.88rem; color: var(--green); font-weight: 500;
+  display: flex; align-items: center; gap: 6px;
+}
+.browse-item .bi-a::before { content: '✓'; }
+.browse-item.mastered { border-color: rgba(76,175,110,.3); }
+.browse-item.mastered .bi-q::after {
+  content: ' ★'; color: var(--accent); font-size: 12px;
+}
+
+/* ── SPEED MODE ── */
+.speed-timer {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem; font-weight: 700; color: var(--accent);
+  text-align: center; margin-bottom: 8px;
+}
+.speed-timer.danger { color: var(--red); animation: pulse .5s infinite alternate; }
+@keyframes pulse { to { opacity: .5; } }
+.speed-info { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+/* ── EXAM HEADER ── */
+.exam-topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(15,14,12,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 16px;
+  display: none;
+}
+.exam-timer-display {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700; color: var(--accent);
+}
+.exam-timer-display.danger { color: var(--red); }
+.exam-qmap {
+  display: flex; flex-wrap: wrap; gap: 5px; flex: 1; justify-content: center;
+}
+.exam-dot {
+  width: 22px; height: 22px; border-radius: 4px;
+  border: 1px solid var(--border); background: var(--surface2);
+  cursor: pointer; transition: all .15s; font-size: 10px;
+  display: flex; align-items: center; justify-content: center; color: var(--muted);
+}
+.exam-dot.answered { background: var(--accent); color: #0f0e0c; border-color: var(--accent); }
+.exam-dot.current { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(232,200,74,.3); }
+.exam-submit-btn {
+  padding: 10px 22px; background: var(--accent); color: #0f0e0c;
+  border: none; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 14px 22px; border-radius: 10px;
+  font-size: 0.88rem; z-index: 9999;
+  transform: translateY(80px); opacity: 0;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  max-width: 300px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* responsive */
+@media(max-width:480px) {
+  .mode-grid { grid-template-columns: 1fr; }
+  .result-breakdown { grid-template-columns: 1fr 1fr; }
+  .q-card { padding: 22px; }
+  .exam-qmap { max-width: 200px; }
+}
+</style>
+</head>
+<body>
+<button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+<div id="app">
+
+<!-- ══════════════ HOME ══════════════ -->
+<div id="home">
+  <div class="home-badge">Spring 2025–2026 · Children's Literature</div>
+  <h1 class="home-title">Master the<br><em>Test</em></h1>
+  <p class="home-sub">167 questions · 3 answer choices each · Target: 40 correct answers</p>
+  <div class="home-stats">
+    <div class="stat-box"><div class="stat-num" id="stat-total">167</div><div class="stat-label">Questions</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-mastered">0</div><div class="stat-label">Mastered</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">Streak 🔥</div></div>
+  </div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="startMode('flashcard')">
+      <div class="mode-icon">🃏</div>
+      <div class="mode-name">Flashcards</div>
+      <div class="mode-desc">Flip through Q&A cards. Mark what you know. Spaced repetition logic.</div>
+    </div>
+    <div class="mode-card" onclick="startMode('learn')">
+      <div class="mode-icon">📖</div>
+      <div class="mode-name">Learn Mode</div>
+      <div class="mode-desc">Answer questions with instant feedback. Repeats wrong answers until you get them.</div>
+    </div>
+    <div class="mode-card" onclick="startMode('speed')">
+      <div class="mode-icon">⚡</div>
+      <div class="mode-name">Speed Round</div>
+      <div class="mode-desc">10 seconds per question. Improves recall speed under pressure.</div>
+    </div>
+    <div class="mode-card" onclick="startMode('exam')">
+      <div class="mode-icon">📝</div>
+      <div class="mode-name">Exam Mode</div>
+      <div class="mode-desc">40 random questions · 30-min timer · No feedback until the end. Simulates the real test.</div>
+    </div>
+    <div class="mode-card" onclick="startMode('browse')">
+      <div class="mode-icon">🔍</div>
+      <div class="mode-name">Browse All</div>
+      <div class="mode-desc">See every question + answer. Search, review, study at your own pace.</div>
+    </div>
+    <div class="mode-card" onclick="startMode('weakspots')">
+      <div class="mode-icon">🎯</div>
+      <div class="mode-name">Weak Spots</div>
+      <div class="mode-desc">Focuses only on questions you've gotten wrong before. Drill until perfect.</div>
+    </div>
+  </div>
+  <div class="progress-section">
+    <div class="progress-title">Overall Mastery</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="home-progress-bar" style="width:0%"></div></div>
+    <div class="progress-info"><span id="prog-left">0 mastered</span><span id="prog-pct">0%</span></div>
+  </div>
+</div>
+
+<!-- ══════════════ EXAM TOPBAR ══════════════ -->
+<div class="exam-topbar" id="exam-topbar">
+  <div class="exam-timer-display" id="exam-timer-display">30:00</div>
+  <div class="exam-qmap" id="exam-qmap"></div>
+  <button class="exam-submit-btn" onclick="submitExam()">Submit Exam</button>
+</div>
+
+<!-- ══════════════ QUIZ VIEW ══════════════ -->
+<div id="quiz-view">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="goHome()">← Home</button>
+    <span class="quiz-mode-label" id="mode-label">Learn Mode</span>
+    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="q-prog-fill"></div></div>
+    <span class="qnum" id="qnum">1 / 40</span>
+  </div>
+
+  <!-- Speed timer (shown only in speed mode) -->
+  <div id="speed-timer-wrap" style="display:none">
+    <div class="speed-timer" id="speed-timer">10</div>
+    <div class="speed-info" id="speed-score-info">Score: 0</div>
+  </div>
+
+  <!-- Flashcard -->
+  <div id="flashcard-area" style="display:none">
+    <div class="flashcard-wrap">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-face card-front">
+          <div class="card-front-label">Question — tap to reveal answer</div>
+          <div class="card-question" id="fc-question"></div>
+        </div>
+        <div class="flashcard-face card-back">
+          <div class="card-answer-label">✓ Correct Answer</div>
+          <div class="card-answer" id="fc-answer"></div>
+          <div class="card-hint">Did you know this?</div>
+        </div>
+      </div>
+    </div>
+    <div class="flashcard-controls">
+      <button class="fc-btn retry" onclick="fcMark(false)">✗ Still Learning</button>
+      <button class="fc-btn" onclick="flipCard()">Flip Card</button>
+      <button class="fc-btn knew" onclick="fcMark(true)">✓ Got It!</button>
+    </div>
+  </div>
+
+  <!-- MCQ area -->
+  <div id="mcq-area">
+    <div class="q-card">
+      <div class="q-text" id="q-text"></div>
+      <div class="answers" id="answers"></div>
+    </div>
+    <div class="feedback-bar" id="feedback-bar"></div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+</div>
+
+<!-- ══════════════ BROWSE VIEW ══════════════ -->
+<div id="browse-view">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="goHome()">← Home</button>
+    <span class="quiz-mode-label">Browse All Questions</span>
+  </div>
+  <input class="search-bar" id="search-bar" placeholder="Search questions or answers..." oninput="filterBrowse()" />
+  <div class="browse-list" id="browse-list"></div>
+</div>
+
+<!-- ══════════════ RESULTS VIEW ══════════════ -->
+<div id="results-view">
+  <div class="result-ring" id="result-ring">
+    <div class="result-pct" id="result-pct">0%</div>
+  </div>
+  <div class="result-title" id="result-title">Well done!</div>
+  <div class="result-sub" id="result-sub"></div>
+  <div class="result-breakdown">
+    <div class="rb-box"><div class="rb-num" id="rb-correct" style="color:var(--green)">0</div><div class="rb-label">Correct</div></div>
+    <div class="rb-box"><div class="rb-num" id="rb-wrong" style="color:var(--red)">0</div><div class="rb-label">Wrong</div></div>
+    <div class="rb-box"><div class="rb-num" id="rb-total">0</div><div class="rb-label">Total</div></div>
+  </div>
+  <div class="result-actions">
+    <button class="ra-btn primary" id="ra-retry" onclick="retryMode()">Retry Same Mode</button>
+    <button class="ra-btn secondary" onclick="startMode('weakspots')">Drill Weak Spots</button>
+    <button class="ra-btn secondary" onclick="goHome()">← Home</button>
+  </div>
+  <div class="wrong-review" id="wrong-review"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div><!-- #app -->
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+const RAW = [
+["1. What factors are important in adapting foreign texts for children?", "Grammar only", "Difficulty level only", "Age suitability, cultural environment, pedagogical requirements"],
+["2. How does the adapted text differ from the original?", "Translate only", "The complex structure is preserved.", "Simple language, condensed content, child-friendly themes"],
+["3. Why is adaptation necessary in children's literature?", "To change language only", "To shorten text", "To adapt to children's level of understanding"],
+["4. Which language level is not suitable for children?", "Short and simple", "Simple and clear", "Full of scientific terms"],
+["5. How was \"Gulliver's Travels\" adapted for children?", "Only images added", "Original unchanged", "Shortened and simplified"],
+["6. What mistakes are made when translating children's literature?", "Grammatical errors", "Intercultural misunderstanding", "Both"],
+["7. What should texts adapted for children be like?", "Long and boring", "Complicated and confusing", "Interesting and clear"],
+["8. What methods are used in teaching foreign fairy tales?", "No methods applied", "Read only", "Interactive Methods"],
+["9. Which language style prevails in children's literature?", "Official", "Scientific", "Simple and figurative"],
+["10. How was Alice in Wonderland adapted?", "Only images added", "Original unchanged", "Shortened and simplified"],
+["11. What is meant by children's reading circle?", "Reading speed", "Textbooks only", "A collection of age-appropriate literary works"],
+["12. What works are suitable for preschool children?", "Historical novels", "Scientific articles", "Short poems, fairy tales, color illustrations"],
+["13. What can be done to expand the scope of study?", "Make reading compulsory", "Teaching only one type of book", "Offer works from different genres"],
+["14. Which type of book is best for young children?", "Political articles", "Science journals", "Songs and Fairy Tales"],
+["15. What factors are important in determining the scope of study?", "Book difficulty only", "Young only", "Age, interest, level of knowledge"],
+["16. Which age group is \"Red Riding Hood\" suitable for?", "Ages 15 and over", "10-12 years old", "Ages 3-6"],
+["17. What works are not included in children's reading?", "Colorful children's books", "Fairy tales, poems", "Adult novels"],
+["18. What are the methods for expanding the scope of study?", "No methods", "Only the teacher chooses", "Pay attention to the child's opinion when choosing a book"],
+["19. How will the children's reading range be expanded?", "Force to read", "Teaching only one type of book", "Offer books on various topics"],
+["20. Which type of book arouses interest in reading in children?", "Works in difficult language", "Long scientific articles", "Colorful pictures and interesting stories"],
+["21. What is children's folklore?", "Only fairy tales", "Adult Stories", "Types of folklore for children"],
+["22. Which of them is not a type of children's folklore?", "Fairy tale", "Morning glory", "Scientific article"],
+["23. What kind of folklore is \"The Snow Queen\"?", "Religious narrative", "Historical legend", "Folk Tale"],
+["24. What is a joke?", "Song accompaniment", "Ritual", "Funny story"],
+["25. What's an askiya?", "Children's game", "Musical instrument", "Jokes, wordplay"],
+["26. What kind of folklore is \"The Girl with Fire Hair\"?", "Religious tradition", "Historical legend", "Folk Tale"],
+["27. What function does children's folklore perform?", "Religious education only", "Entertainment only", "Educational, entertaining, educational"],
+["28. To which type of folklore does \"Cinderella\" belong?", "Religious education only", "Religious narrative", "Folk Tale"],
+["29. How is children's folklore preserved?", "Only in writing", "Audio recordings only", "Orally and in writing"],
+["30. Which is NOT the main genre of children's literature?", "Fairy tale", "Poem", "Scientific treatise"],
+["31. What genre does \"Alice in Wonderland\" belong to?", "Historical novel", "Realistic story", "Fantasy"],
+["32. Which genre is most common in children's literature?", "Philosophical treatise", "Scientific article", "Fairy Tale and Poem"],
+["33. What genre is \"The Adventures of Tom Sawyer\"?", "Lyric poem", "Tragedy", "Adventure Novel"],
+["34. What is the role of fiction in children's literature?", "Not at all", "Rare", "Most common"],
+["35. Which genre is less common in children's literature?", "Song", "Fairy tale", "Detective"],
+["36. In which genre was \"Gulliver's Travels\" originally written?", "Lyric poetry", "Children's fairy tale", "Satire"],
+["37. Which genre of works are best accepted for children?", "Economic analysis", "Scientific theories", "Adventure & Fantasy"],
+["38. What genre does \"Red Riding Hood\" belong to?", "Realistic novel", "Historical narrative", "Folk Tale"],
+["39. How do new genres emerge in children's literature?", "No new genres will appear", "Only traditional genres are supported", "Adjusted to children's interests"],
+["40. The main feature of preschool children's literature?", "Long scientific explanations", "Complex philosophical topics", "Simplicity, colorful images"],
+["41. What works do children of this age like?", "Historical research", "Scientific articles", "Short Tales and Poems"],
+["42. What element is important in preschool children's books?", "Long texts", "Complex graphics", "Color Images"],
+["43. What topics are not suitable for preschool children?", "Simple life situations", "Animal stories", "Complicated social issues"],
+["44. What criteria are important when choosing a book for children of this age?", "Large amount of text", "Scientific complexity", "Comprehensible language and engaging plot"],
+["45. What task does preschool children's literature perform?", "Formation of professional orientation", "Scientific education", "Speech development, expanding imagination"],
+["46. Which author's works are suitable for preschool children?", "Fyodor Dostoevsky", "Leo Tolstoy", "Korney Chukovsky"],
+["47. What book formats are available for preschool children?", "Science journals", "Text books only", "Hardcover, colorful images"],
+["48. How can reading books be made interesting for children of this age?", "Encourage self-study only", "Compulsory education", "Reading aloud, interactive methods"],
+["49. What is askiya?", "Ritual", "Musical instrument", "Pun"],
+["What is the difference between a myth and a legend?", "no difference", "legend is always a written source", "myth is fictional, legend is based on a real event"],
+["Which one can serve as an example of an askiya?", "\"Chemistry Textbook\"", "\"The History of Uzbekistan\"", "\"How did the ant defeat the elephant?\""],
+["What are the characteristics of myths?", "Consists of scientific comments", "Only historical facts", "Contains supernatural elements"],
+["What is the significance of \"epic poems\" for children?", "Describes faces", "Teaches history", "All answers are correct"],
+["What is the similarity between legends and myths?", "Real events", "It has a scientific basis", "Oral heritage"],
+["What does \"Anecdote\" teach children?", "Martial Arts", "Strict discipline", "Humor and wit"],
+["Who created the legend?", "Scholars", "Writers", "People"],
+["The main task of school-aged children's literature?", "Building skills", "Intimidation", "Stimulating interest in learning"],
+["Why is the didactic element important in children's literature?", "Intimidation", "Encouraging emotions", "Teaching moral values"],
+["Which country does \"Grimm's Tales\" belong to?", "Italy", "Germany", "France"],
+["What is a common feature of European folk tales?", "Academic topics", "Historical events", "The Battle of Good and Evil"],
+["Who is \"Charles Perrault\"?", "German artist", "English poet", "French writer, storyteller"],
+["Which folk tale is \"Red Riding Hood\"?", "German", "English", "French"],
+["Which period do \"Andersen's Tales\" belong to?", "17th century", "20th century", "19th Century"],
+["A frequent character in European folk tales?", "Scientists", "Athletes", "Prince and Princess"],
+["Which folk oral heritage is \"Song of the Nibelungs\"?", "French", "English", "German"],
+["When did the first examples of children's literature appear?", "In the 20th century", "In the Middle Ages", "In Ancient Egypt and Greece"],
+["Which period does \"Aesop's Tales\" belong to?", "Middle Ages", "Renaissance period", "Ancient Greece"],
+["Writer who made a great contribution to the development of children's literature is …?", "William Shakespeare", "Leo Tolstoy", "Hans Christian Andersen"],
+["When was the first printed children's book published?", "In the 18th century", "In the 20th century", "In the 16th century"],
+["When did the formation of children's literature as an independent genre begin?", "In the 9th century", "In the 20th century", "In the 17th-18th Centuries"],
+["Can \"Robinson Crusoe\" be included in children's literature?", "No, because it's adult-only", "Included only in scientific literature", "Yes, because it's in the adventure genre"],
+["Where did the first pedagogical views in children's literature emerge?", "In Eastern madrasas", "In the Americas", "In European schools"],
+["What is the role of printing houses in the development of children's literature?", "Printing images only", "Distribution of musical works", "Promoting books"],
+["What is one of the modern forms of children's literature?", "Scientific articles", "Historical documents", "Cartoons and Comics"],
+["What were children's works like in medieval English literature?", "Only about adventures", "Academic topics", "Religious and moral content"],
+["The role of \"Geoffrey Chaucer\" in children's literature?", "Written only for adults", "Music composer", "His work includes stories designed for children"],
+["In what form was children's literature mainly distributed during the Middle Ages?", "Printed books", "Scientific brochures", "Mental Fairy Tales"],
+["Which era's folk hero is \"Robin Hood\"?", "Renaissance period", "Modern era", "Middle Ages"],
+["A common theme in medieval children's literature?", "Scientific discoveries", "Sports competitions", "Heroism and Adventure"],
+["The role of \"ballad\" in medieval English literature?", "Scientific articles", "Religious ceremonies", "Heroic Stories"],
+["Is Malory's work about \"King Arthur\" suitable for children?", "No, because it is a complex language", "Only for historians", "Yes, because of the theme of adventure and heroism"],
+["Who mainly created children's literature in the Middle Ages?", "Scientists", "Athletes", "Clergy and folk artists"],
+["The role of \"tale\" in medieval English literature?", "Type of scientific literature", "Religious topics only", "An important part of oral folk art"],
+["How were children's books written in the Middle Ages?", "In print", "In electronic form", "In handwritten form"],
+["What is a common genre in children's literature?", "Roman", "Tragedy", "Fairy tale"],
+["Which genre do \"Songs\" belong to?", "Dramatic", "Epic", "Lyrical"],
+["The role of \"tale\" in children's literature?", "Subgenre", "Scientific genre", "Main Genre"],
+["What genre does \"Anecdote\" belong to?", "Dramatic", "Lyrical", "Satire"],
+["A genre created based on \"entertainment\"?", "Epic", "Roman", "Askiya"],
+["Feature of \"Legend\"?", "Completely imaginary", "Scientific information", "Has historical basis"],
+["Who is the main character of Celtic tales?", "Robin Hood", "Alice", "King Arthur"],
+["A common theme in Celtic tales?", "Scientific discoveries", "Sports competitions", "Magic and Wizardry"],
+["Which cultural fairy tale does \"Tristan and Isolde\" belong to?", "Arabic", "Indian", "Celt"],
+["Features of Celtic fairy tales?", "Only real events", "It has a scientific basis", "Mix of historical and legendary"],
+["In which fairy tale does \"The Island at the Edge of the World\" appear?", "In Grimm's tales", "In Andersen's fairy tales", "In Celtic Myths"],
+["Which country were the Brothers Grimm born in?", "France", "England", "Germany"],
+["The Grimm's most famous work?", "\"Alice in Wonderland\"", "\"Karlson\"", "\"Red Hat\""],
+["Source of Grimm Tales?", "Personal fantasy", "Scientific research", "Folklore"],
+["Whose work is \"The Bremen Musicians\"?", "Andersen", "Pushkin", "Grimms"],
+["Pedagogical significance of Grimm fairy tales?", "Promoting sports", "Teaching music", "Teaching Good and Evil"],
+["Which country was Andersen born in?", "Sweden", "Norway", "Denmark"],
+["Andersen's most famous fairy tale?", "\"Naked King\"", "\"Chippolina\"", "\"Little Shepherd Girl\""],
+["What are the features of Andersen's fairy tales?", "Just funny", "Sports themes", "Philosophical and didactic"],
+["The impact of Andersen's fairy tales on children?", "Intimidation", "Teaching music", "Teaching virtue and truth"],
+["Which country's writer is A.A. Milne?", "USA", "France", "England"],
+["Milne’s most famous work?", "\"Alice in Wonderland\"", "\"Karlson\"", "\"Winnie the Pooh\""],
+["Which animals are the characters in \"Winnie the Pooh\"?", "Lion and elephant", "Monkey and Tiger", "Bear and Rabbit"],
+["The impact of Milne’s works on children?", "Intimidation", "Teaching music", "Friendship and humor"],
+["When was \"Winnie the Pooh\" written?", "1901", "1950", "1926"],
+["Which country's writer is Rodari?", "Spain", "France", "Italy"],
+["Who is the character of \"Chippolina\"?", "Bear", "Rabbit", "Little Man"],
+["The main theme of “Chippolina”?", "Sports competitions", "Music", "Freedom and Justice"],
+["Which genre does \"Chippolina\" belong to?", "Science fiction", "Historical novel", "Adventure"],
+["Karlson's slogan?", "\"Sorry, I have to go\"", "\"I'm so tired\"", "\"It's a simple job, I'm the best!\""],
+["Which country's writer is Lindgren?", "Norway", "Denmark", "Sweden"],
+["Features of Uzbek folk tales", "Scientific content", "Sports themes", "Didactic content"],
+["What kind of character is \"Aldar Kose\"?", "Brave warrior", "Wise scholar", "Clever and stubborn"],
+["Who is considered the author of \"Alice’s Adventures in Wonderland\"?", "Roald Dahl", "C. S. Lewis", "Lewis Carroll"],
+["Which literary device is most common in fairy tales?", "Realism", "Irony", "Magic and fantasy"],
+["What is the primary purpose of children’s literature?", "To teach only grammar rules", "To present historical statistics", "To entertain, educate, and develop imagination"],
+["Which character refuses to grow up in J. M. Barrie’s famous work?", "Tom Sawyer", "Harry Potter", "Peter Pan"],
+["What type of story usually includes talking animals and a moral lesson?", "Science fiction", "Mystery", "Fable"],
+["Who wrote \"Charlie and the Chocolate Factory\"?", "C. S. Lewis", "J. K. Rowling", "Roald Dahl"],
+["Which of these is a common theme in children’s literature?", "Political corruption", "Economic inflation", "Friendship and personal growth"],
+["What is the setting of most traditional fairy tales?", "Modern cities", "Space stations", "Imaginary kingdoms and forests"],
+["Which work is written by Dr. Seuss?", "Treasure Island", "Charlotte’s Web", "The Cat in the Hat"],
+["In children’s literature, what does the term “bildungsroman” refer to?", "A story about animals", "A collection of poems", "A coming-of-age story"],
+["Which novel features a girl named Dorothy traveling to the Land of Oz?", "Alice’s Adventures in Wonderland", "Anne of Green Gables", "The Wonderful Wizard of Oz"],
+["Who is the creator of Winnie-the-Pooh?", "Beatrix Potter", "E. B. White", "A. A. Milne"],
+["What is the usual function of illustrations in children’s books?", "To replace the story completely", "To confuse readers", "To support understanding and imagination"],
+["Which genre often teaches moral lessons through imaginary narratives?", "Biography", "Tragedy", "Fairy tale"],
+["Who wrote \"The Chronicles of Narnia\"?", "Roald Dahl", "Mark Twain", "C. S. Lewis"],
+["Which child character lives in a jungle with wild animals?", "Pinocchio", "Oliver Twist", "Mowgli"],
+["What is the name of the wooden puppet who wants to become a real boy?", "Peter Pan", "Tom Sawyer", "Pinocchio"],
+["Which element is essential in most adventure stories for children?", "A romantic subplot", "Scientific formulas", "A dangerous journey or quest"],
+["Which author is famous for writing animal-centered children’s stories such as \"Peter Rabbit\"?", "Hans Christian Andersen", "Lewis Carroll", "Beatrix Potter"],
+["What does “fantasy literature” mainly include?", "Real historical events only", "Academic essays", "Imaginary worlds and magical elements"],
+["Which famous children’s book begins with the line about a hobbit living in a hole?", "Treasure Island", "Charlotte’s Web", "The Hobbit"],
+["Who wrote \"Charlotte’s Web\"?", "Dr. Seuss", "A. A. Milne", "E. B. White"],
+["Which character is known for stealing from the rich and giving to the poor in many children’s adaptations?", "Sherlock Holmes", "Captain Hook", "Robin Hood"],
+["What is one major benefit of reading children’s literature?", "It limits imagination", "It discourages empathy", "It develops creativity and emotional understanding"],
+["Which fairy tale character loses a glass slipper?", "Snow White", "Rapunzel", "Cinderella"],
+["Which literary form is specifically written for performance on stage?", "Novel", "Essay", "Drama"],
+["What is the name of the bear in \"The Jungle Book\"?", "Shere Khan", "Raksha", "Baloo"],
+["Which children’s author created \"Matilda\"?", "C. S. Lewis", "J. M. Barrie", "Roald Dahl"],
+["In many children’s stories, what does the antagonist usually represent?", "Wisdom and kindness", "Peace and harmony", "Conflict or evil forces"],
+["Which story features a boy painting a fence as punishment?", "David Copperfield", "Oliver Twist", "The Adventures of Tom Sawyer"],
+["Which famous fairy tale features a girl with very long hair trapped in a tower?", "Sleeping Beauty", "Little Red Riding Hood", "Rapunzel"],
+["Who wrote \"Treasure Island\"?", "Charles Dickens", "Daniel Defoe", "Robert Louis Stevenson"],
+["Which character travels through a mirror into a strange world?", "Dorothy Gale", "Heidi", "Alice"],
+["What is the main characteristic of a folktale?", "It is always scientifically accurate", "It is written only for adults", "It is passed down through generations"],
+["Which animal is the main antagonist in \"The Three Little Pigs\"?", "Bear", "Fox", "Wolf"],
+["Who created the character Paddington Bear?", "E. Nesbit", "Kenneth Grahame", "Michael Bond"],
+["Which book tells the story of a spider saving a pig?", "Stuart Little", "Black Beauty", "Charlotte’s Web"],
+["What is the usual role of the protagonist in children’s literature?", "To create the central conflict only", "To remain unchanged throughout the story", "To guide the story through challenges and growth"],
+["Which classic children’s story includes the characters Mr. Toad and Mole?", "Peter Pan", "The Secret Garden", "The Wind in the Willows"],
+["What kind of ending is most common in traditional children’s literature?", "An unresolved tragic ending", "A philosophical debate", "A happy or hopeful resolution"],
+["Which children’s novel tells the story of a lonely orphan girl living in Yorkshire?", "Pollyanna", "Little Women", "The Secret Garden"],
+["Who is the author of \"Anne of Green Gables\"?", "Louisa May Alcott", "Frances Hodgson Burnett", "L. M. Montgomery"],
+["Which creature does Lucy first meet in Narnia?", "A dragon", "A giant", "A faun"],
+["What is the central conflict in many children’s adventure stories?", "Completing office work", "Solving economic crises", "Overcoming obstacles and dangers"],
+["Which story features a tiny boy no bigger than a thumb?", "Jack and the Beanstalk", "Hansel and Gretel", "Thumbelina"],
+["Which author is famous for writing dark fairy tales such as \"The Little Mermaid\" and \"The Ugly Duckling\"?", "Brothers Grimm", "Lewis Carroll", "Hans Christian Andersen"],
+["Which novel follows the journey of a horse narrated from the horse’s perspective?", "National Velvet", "Heidi", "Black Beauty"],
+["What is a common purpose of anthropomorphism in children’s literature?", "To make stories harder to understand", "To remove emotional connection", "To give human qualities to animals or objects"],
+["Which children’s classic centers on four sisters growing up during the Civil War era?", "Jane Eyre", "Rebecca", "Little Women"],
+["Which type of character usually helps the protagonist during difficult moments?", "Antagonist", "Villain", "Supporting character or mentor"],
+];
+
+// RAW format: [question, wrong1, wrong2, correct_answer]
+const QS = RAW.map((row, i) => {
+  const choices = [
+    { text: row[1], correct: false },
+    { text: row[2], correct: false },
+    { text: row[3], correct: true }
+  ];
+  return { id: i, q: row[0], choices };
+});
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let mastered = JSON.parse(localStorage.getItem('cl_mastered') || '[]');
+let wrongCounts = JSON.parse(localStorage.getItem('cl_wrong') || '{}');
+let streak = parseInt(localStorage.getItem('cl_streak') || '0');
+let currentMode = '';
+let queue = [];
+let qIndex = 0;
+let sessionCorrect = 0;
+let sessionWrong = 0;
+let sessionWrongQs = [];
+let answered = false;
+let examAnswers = {}; // {qIndex: choiceIndex}
+let examTimer = null;
+let examTimeLeft = 1800;
+let speedTimer = null;
+let speedTimeLeft = 10;
+let speedScore = 0;
+let fcFlipped = false;
+let retryFn = null;
+
+function saveMastered() { localStorage.setItem('cl_mastered', JSON.stringify(mastered)); }
+function saveWrong() { localStorage.setItem('cl_wrong', JSON.stringify(wrongCounts)); }
+function saveStreak() { localStorage.setItem('cl_streak', streak); }
+
+// ══════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════
+function updateHomeStats() {
+  document.getElementById('stat-mastered').textContent = mastered.length;
+  document.getElementById('stat-streak').textContent = streak;
+  const pct = Math.round(mastered.length / QS.length * 100);
+  document.getElementById('home-progress-bar').style.width = pct + '%';
+  document.getElementById('prog-left').textContent = mastered.length + ' mastered';
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function goHome() {
+  clearTimers();
+  document.getElementById('exam-topbar').style.display = 'none';
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('quiz-view').style.display = 'none';
+  document.getElementById('browse-view').style.display = 'none';
+  document.getElementById('results-view').style.display = 'none';
+  updateHomeStats();
+}
+
+function clearTimers() {
+  if (examTimer) clearInterval(examTimer);
+  if (speedTimer) clearInterval(speedTimer);
+  examTimer = null; speedTimer = null;
+}
+
+// ══════════════════════════════════════════════════
+// SHUFFLE
+// ══════════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function shuffledChoices(q) {
+  const choices = shuffle(q.choices.map((c, i) => ({ ...c, origI: i })));
+  return choices;
+}
+
+// ══════════════════════════════════════════════════
+// MODE LAUNCHER
+// ══════════════════════════════════════════════════
+function startMode(mode) {
+  currentMode = mode;
+  clearTimers();
+  sessionCorrect = 0; sessionWrong = 0; sessionWrongQs = [];
+  qIndex = 0; answered = false; examAnswers = {};
+  speedScore = 0; fcFlipped = false;
+
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('results-view').style.display = 'none';
+  document.getElementById('browse-view').style.display = 'none';
+  document.getElementById('exam-topbar').style.display = 'none';
+
+  if (mode === 'browse') { showBrowse(); return; }
+
+  document.getElementById('quiz-view').style.display = 'block';
+
+  if (mode === 'flashcard') {
+    queue = shuffle([...QS]);
+    document.getElementById('mode-label').textContent = '🃏 Flashcards';
+    document.getElementById('flashcard-area').style.display = 'block';
+    document.getElementById('mcq-area').style.display = 'none';
+    document.getElementById('speed-timer-wrap').style.display = 'none';
+    retryFn = () => startMode('flashcard');
+    showFlashcard();
+
+  } else if (mode === 'learn') {
+    queue = shuffle([...QS]);
+    document.getElementById('mode-label').textContent = '📖 Learn Mode';
+    document.getElementById('flashcard-area').style.display = 'none';
+    document.getElementById('mcq-area').style.display = 'block';
+    document.getElementById('speed-timer-wrap').style.display = 'none';
+    retryFn = () => startMode('learn');
+    showMCQ();
+
+  } else if (mode === 'speed') {
+    queue = shuffle([...QS]).slice(0, 30);
+    document.getElementById('mode-label').textContent = '⚡ Speed Round';
+    document.getElementById('flashcard-area').style.display = 'none';
+    document.getElementById('mcq-area').style.display = 'block';
+    document.getElementById('speed-timer-wrap').style.display = 'block';
+    retryFn = () => startMode('speed');
+    showMCQ();
+    startSpeedTimer();
+
+  } else if (mode === 'exam') {
+    queue = shuffle([...QS]).slice(0, 40);
+    document.getElementById('mode-label').textContent = '📝 Exam Mode';
+    document.getElementById('flashcard-area').style.display = 'none';
+    document.getElementById('mcq-area').style.display = 'block';
+    document.getElementById('speed-timer-wrap').style.display = 'none';
+    document.getElementById('exam-topbar').style.display = 'flex';
+    retryFn = () => startMode('exam');
+    buildExamMap();
+    startExamTimer();
+    showMCQ();
+
+  } else if (mode === 'weakspots') {
+    const weak = QS.filter(q => (wrongCounts[q.id] || 0) > 0);
+    if (weak.length === 0) {
+      toast("No weak spots yet! Try Learn or Exam mode first.", 'success');
+      goHome(); return;
+    }
+    queue = shuffle(weak);
+    document.getElementById('mode-label').textContent = '🎯 Weak Spots';
+    document.getElementById('flashcard-area').style.display = 'none';
+    document.getElementById('mcq-area').style.display = 'block';
+    document.getElementById('speed-timer-wrap').style.display = 'none';
+    retryFn = () => startMode('weakspots');
+    showMCQ();
+  }
+}
+
+function retryMode() { if (retryFn) retryFn(); }
+
+// ══════════════════════════════════════════════════
+// FLASHCARD
+// ══════════════════════════════════════════════════
+function showFlashcard() {
+  if (qIndex >= queue.length) { showResults(); return; }
+  fcFlipped = false;
+  const q = queue[qIndex];
+  document.getElementById('fc-question').textContent = q.q;
+  document.getElementById('fc-answer').textContent = q.choices.find(c => c.correct).text;
+  const fc = document.getElementById('flashcard');
+  fc.classList.remove('flipped');
+  updateProgress();
+}
+
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', fcFlipped);
+}
+
+function fcMark(knew) {
+  const q = queue[qIndex];
+  if (knew) {
+    sessionCorrect++;
+    if (!mastered.includes(q.id)) mastered.push(q.id);
+    saveMastered();
+    streak++;
+    saveStreak();
+  } else {
+    sessionWrong++;
+    wrongCounts[q.id] = (wrongCounts[q.id] || 0) + 1;
+    saveWrong();
+    streak = 0; saveStreak();
+    sessionWrongQs.push(q);
+  }
+  qIndex++;
+  showFlashcard();
+}
+
+// ══════════════════════════════════════════════════
+// MCQ
+// ══════════════════════════════════════════════════
+function showMCQ() {
+  if (currentMode !== 'exam' && qIndex >= queue.length) { showResults(); return; }
+  answered = false;
+  const q = queue[qIndex];
+  document.getElementById('q-text').textContent = q.q;
+
+  const choices = shuffledChoices(q);
+  const answersEl = document.getElementById('answers');
+  answersEl.innerHTML = '';
+  const letters = ['A','B','C'];
+
+  choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.dataset.correct = c.correct;
+    btn.innerHTML = `<span class="letter">${letters[i]}</span><span>${c.text}</span>`;
+    btn.onclick = () => selectAnswer(btn, c.correct, q);
+    answersEl.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback-bar');
+  fb.style.display = 'none'; fb.className = 'feedback-bar';
+  document.getElementById('next-btn').style.display = 'none';
+
+  updateProgress();
+
+  // exam mode: allow navigation
+  if (currentMode === 'exam') {
+    if (examAnswers[qIndex] !== undefined) {
+      // restore selection
+      const btns = answersEl.querySelectorAll('.answer-btn');
+      // we can't perfectly restore without storing which button, so just show unanswered
+    }
+  }
+}
+
+function selectAnswer(btn, isCorrect, q) {
+  if (currentMode === 'exam') {
+    // just mark selected, no feedback
+    document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('correct', 'wrong', 'reveal-correct'));
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    examAnswers[qIndex] = isCorrect;
+    updateExamMap();
+    // auto advance after short delay
+    setTimeout(() => {
+      qIndex++;
+      if (qIndex >= queue.length) { submitExam(); }
+      else { showMCQ(); }
+    }, 400);
+    return;
+  }
+
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.answer-btn');
+  allBtns.forEach(b => { b.disabled = true; });
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    sessionCorrect++;
+    streak++;
+    saveStreak();
+    if (!mastered.includes(q.id)) mastered.push(q.id);
+    saveMastered();
+    showFeedback(true, null);
+  } else {
+    btn.classList.add('wrong');
+    sessionWrong++;
+    wrongCounts[q.id] = (wrongCounts[q.id] || 0) + 1;
+    saveWrong();
+    streak = 0; saveStreak();
+    sessionWrongQs.push(q);
+    // reveal correct
+    allBtns.forEach(b => {
+      if (b.dataset.correct === 'true') b.classList.add('reveal-correct');
+    });
+    const correctText = q.choices.find(c => c.correct).text;
+    showFeedback(false, correctText);
+
+    // In learn mode, re-queue this question
+    if (currentMode === 'learn') {
+      const insertAt = Math.min(qIndex + 3, queue.length);
+      queue.splice(insertAt, 0, q);
+    }
+  }
+
+  document.getElementById('next-btn').style.display = 'block';
+
+  // speed mode: stop timer
+  if (currentMode === 'speed') { clearInterval(speedTimer); speedTimer = null; }
+}
+
+function showFeedback(correct, correctText) {
+  const fb = document.getElementById('feedback-bar');
+  fb.style.display = 'block';
+  if (correct) {
+    fb.className = 'feedback-bar correct';
+    fb.textContent = '✓ Correct! ' + (streak > 2 ? `🔥 ${streak} streak!` : '');
+  } else {
+    fb.className = 'feedback-bar wrong';
+    fb.textContent = '✗ Wrong. Correct answer: ' + correctText;
+  }
+}
+
+function nextQuestion() {
+  qIndex++;
+  if (currentMode === 'speed') startSpeedTimer();
+  showMCQ();
+}
+
+function updateProgress() {
+  const total = queue.length;
+  const pct = total > 0 ? (qIndex / total) * 100 : 0;
+  document.getElementById('q-prog-fill').style.width = pct + '%';
+  document.getElementById('qnum').textContent = `${Math.min(qIndex + 1, total)} / ${total}`;
+}
+
+// ══════════════════════════════════════════════════
+// SPEED TIMER
+// ══════════════════════════════════════════════════
+function startSpeedTimer() {
+  speedTimeLeft = 10;
+  updateSpeedDisplay();
+  if (speedTimer) clearInterval(speedTimer);
+  speedTimer = setInterval(() => {
+    speedTimeLeft--;
+    updateSpeedDisplay();
+    if (speedTimeLeft <= 0) {
+      clearInterval(speedTimer); speedTimer = null;
+      // time up — count as wrong
+      sessionWrong++;
+      const q = queue[qIndex];
+      wrongCounts[q.id] = (wrongCounts[q.id] || 0) + 1;
+      saveWrong();
+      streak = 0; saveStreak();
+      sessionWrongQs.push(q);
+      document.querySelectorAll('.answer-btn').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.correct === 'true') b.classList.add('reveal-correct');
+      });
+      showFeedback(false, q.choices.find(c => c.correct).text);
+      answered = true;
+      document.getElementById('next-btn').style.display = 'block';
+    }
+  }, 1000);
+}
+
+function updateSpeedDisplay() {
+  const el = document.getElementById('speed-timer');
+  el.textContent = speedTimeLeft;
+  el.classList.toggle('danger', speedTimeLeft <= 3);
+  document.getElementById('speed-score-info').textContent = `Score: ${sessionCorrect} correct`;
+}
+
+// ══════════════════════════════════════════════════
+// EXAM MODE
+// ══════════════════════════════════════════════════
+function buildExamMap() {
+  const map = document.getElementById('exam-qmap');
+  map.innerHTML = '';
+  for (let i = 0; i < queue.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'exam-dot';
+    d.textContent = i + 1;
+    d.id = 'edot-' + i;
+    d.onclick = (e => {
+      const idx = i;
+      return () => { if (answered || !answered) { qIndex = idx; showMCQ(); } };
+    })();
+    map.appendChild(d);
+  }
+}
+
+function updateExamMap() {
+  for (let i = 0; i < queue.length; i++) {
+    const d = document.getElementById('edot-' + i);
+    if (!d) continue;
+    d.classList.toggle('answered', examAnswers[i] !== undefined);
+    d.classList.toggle('current', i === qIndex);
+  }
+}
+
+function startExamTimer() {
+  examTimeLeft = 1800;
+  updateExamTimerDisplay();
+  examTimer = setInterval(() => {
+    examTimeLeft--;
+    updateExamTimerDisplay();
+    if (examTimeLeft <= 0) { clearInterval(examTimer); submitExam(); }
+  }, 1000);
+}
+
+function updateExamTimerDisplay() {
+  const m = Math.floor(examTimeLeft / 60).toString().padStart(2, '0');
+  const s = (examTimeLeft % 60).toString().padStart(2, '0');
+  const el = document.getElementById('exam-timer-display');
+  el.textContent = `${m}:${s}`;
+  el.classList.toggle('danger', examTimeLeft < 300);
+}
+
+function submitExam() {
+  clearInterval(examTimer); examTimer = null;
+  document.getElementById('exam-topbar').style.display = 'none';
+  // count results
+  sessionCorrect = 0; sessionWrong = 0; sessionWrongQs = [];
+  queue.forEach((q, i) => {
+    if (examAnswers[i] === true) sessionCorrect++;
+    else {
+      sessionWrong++;
+      wrongCounts[q.id] = (wrongCounts[q.id] || 0) + 1;
+      sessionWrongQs.push(q);
+    }
+  });
+  saveWrong();
+  showResults();
+}
+
+// ══════════════════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════════════════
+function showResults() {
+  document.getElementById('quiz-view').style.display = 'none';
+  document.getElementById('results-view').style.display = 'block';
+
+  const total = currentMode === 'flashcard' ? queue.length : (currentMode === 'exam' ? 40 : queue.length);
+  const pct = Math.round(sessionCorrect / total * 100);
+
+  // ring
+  const ring = document.getElementById('result-ring');
+  ring.style.background = `conic-gradient(var(--accent) ${pct}%, var(--surface) 0%)`;
+  document.getElementById('result-pct').textContent = pct + '%';
+
+  // title
+  let title = pct >= 80 ? '🎉 Excellent!' : pct >= 60 ? '👍 Good Work' : pct >= 40 ? '📚 Keep Studying' : '💪 Don\'t Give Up';
+  if (currentMode === 'exam' && sessionCorrect >= 40) title = '🏆 EXAM PASSED!';
+  document.getElementById('result-title').textContent = title;
+
+  let sub = `You got ${sessionCorrect} out of ${total} correct.`;
+  if (currentMode === 'exam') {
+    sub += sessionCorrect >= 40 ? ' You passed! 🎉' : ` Need ${40 - sessionCorrect} more to pass.`;
+  }
+  document.getElementById('result-sub').textContent = sub;
+
+  document.getElementById('rb-correct').textContent = sessionCorrect;
+  document.getElementById('rb-wrong').textContent = sessionWrong;
+  document.getElementById('rb-total').textContent = total;
+
+  // wrong review
+  const wr = document.getElementById('wrong-review');
+  if (sessionWrongQs.length > 0) {
+    wr.innerHTML = `<div class="wr-title">✗ Questions to Review (${sessionWrongQs.length})</div>`;
+    sessionWrongQs.forEach(q => {
+      const correct = q.choices.find(c => c.correct).text;
+      wr.innerHTML += `<div class="wr-item"><div class="wr-q">${q.q}</div><div class="wr-a">${correct}</div></div>`;
+    });
+  } else {
+    wr.innerHTML = '<div style="color:var(--green);text-align:center;padding:20px">✓ Perfect score! All correct.</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════
+// BROWSE
+// ══════════════════════════════════════════════════
+function showBrowse() {
+  document.getElementById('browse-view').style.display = 'block';
+  renderBrowse(QS);
+}
+
+function renderBrowse(list) {
+  const el = document.getElementById('browse-list');
+  el.innerHTML = '';
+  list.forEach(q => {
+    const correct = q.choices.find(c => c.correct).text;
+    const isMastered = mastered.includes(q.id);
+    const div = document.createElement('div');
+    div.className = 'browse-item' + (isMastered ? ' mastered' : '');
+    div.innerHTML = `<div class="bi-q">${q.q}</div><div class="bi-a">${correct}</div>`;
+    el.appendChild(div);
+  });
+}
+
+function filterBrowse() {
+  const val = document.getElementById('search-bar').value.toLowerCase();
+  const filtered = QS.filter(q => {
+    const correct = q.choices.find(c => c.correct).text.toLowerCase();
+    return q.q.toLowerCase().includes(val) || correct.includes(val);
+  });
+  renderBrowse(filtered);
+}
+
+// ══════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════
+// THEME TOGGLE
+// ══════════════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  document.getElementById('theme-toggle').textContent = isLight ? '🌙' : '☀️';
+  localStorage.setItem('cl_theme', isLight ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('cl_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('theme-toggle').textContent = '🌙';
+  } else {
+    document.getElementById('theme-toggle').textContent = '☀️';
+  }
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+initTheme();
+updateHomeStats();
+</script>
+</body>
+</html>
